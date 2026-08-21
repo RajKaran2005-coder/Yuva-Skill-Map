@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Result</title><link rel="stylesheet" href="/static/style.css"></head><body><header class="navbar"><a class="brand" href="/dashboard">Yuva Skill Map</a><nav><a href="/dashboard">Dashboard</a><a href="/profile">Profile</a><a href="/assessment">Assessment</a><a href="/logout">Logout</a></nav></header><main class="section">
+<div class="visual-career-card">
+  <span class="badge">Career Direction</span>
+  <h2>🎯 Your Career Map</h2>
+  <div class="career-map">
+    <div class="map-node"><b>YOU</b><small>Your Skills</small></div>
+    <div class="map-arrow">→</div>
+    <div class="map-node"><b>SKILL FIT</b><small>{{result["level"]}}</small></div>
+    <div class="map-arrow">→</div>
+    <div class="map-node highlight"><b>CAREER</b><small>Your Direction</small></div>
+  </div>
+  <p>{{result["recommendation"]}}</p>
+  <div class="visual-ai-note"><span class="badge">🤖 AI Visual Explanation</span><p>{{ career_map_text }}</p></div>
+</div>
+<div class="visual-roadmap-card">
+  <span class="badge">Learning Roadmap</span>
+  <h2>🗺️ Your Next Steps</h2>
+  <div class="roadmap">
+    {% for step in result["roadmap"].split(" → ") %}
+    <div class="road-step"><span>{{loop.index}}</span><div><b>{{step}}</b><small>{% if loop.index==1 %}Build the foundation{% elif loop.index==2 %}Practice concepts{% elif loop.index==3 %}Build projects{% elif loop.index==4 %}Prepare for opportunities{% else %}Keep improving{% endif %}</small></div></div>
+    {% endfor %}
+  </div>
+  <div class="visual-ai-note"><span class="badge">🤖 AI Roadmap Explanation</span><p>{{ roadmap_text }}</p></div>
+</div>
+<div class="result-card"><span class="badge">Personalized Skill Report</span><h1>{{result["name"]}}, Your Result</h1><p>{{result["degree"]}} • {{result["course"]}} • Batch {{result["batch"]}}</p><div class="score-circle">{{result["percentage"]}}%</div><h2>{{result["level"]}}</h2><p><b>Score:</b> {{result["score"]}}/{{result["total"]}}</p><div class="result-panel"><h3>🎯 Career Direction</h3><p>{{result["recommendation"]}}</p></div><div class="result-panel"><h3>🗺️ Learning Roadmap</h3><p>{{result["roadmap"]}}</p></div><div class="result-panel"><h3>📚 Selected Subjects</h3><div class="chips">{% for s in subjects %}<span>{{s}}</span>{% endfor %}</div></div>
+<div class="voice-ai-card mentor-launch-card">
+  <div class="mentor-preview" onclick="openMentor()" role="button" tabindex="0">
+    <div class="avatar-orb"><div class="avatar-head"><div class="hair"></div><div class="eye e1"></div><div class="eye e2"></div><div class="mouth"></div></div></div>
+    <div><span class="badge">🤖 AI Career Mentor</span><h2>Talk to your personal AI teacher</h2><p>Click the mentor to open a full-screen talking room.</p></div>
+  </div>
+  <div class="voice-controls">
+    <label class="voice-label">Teacher Voice</label><select id="voiceGender"><option value="female">👩 Female Teacher</option><option value="male">👨 Male Teacher</option></select>
+    <label class="voice-label">AI Language</label><select id="aiLanguage" onchange="updateLanguage()"><option value="hi">🇮🇳 Hindi</option><option value="en">🇬🇧 English</option><option value="bn">🇧🇩 Bengali</option><option value="mr">🇮🇳 Marathi</option><option value="ta">🇮🇳 Tamil</option><option value="te">🇮🇳 Telugu</option><option value="gu">🇮🇳 Gujarati</option></select>
+    <button class="btn primary" type="button" onclick="startAICoach()">▶ Start Mentor</button>
+  </div>
+</div>
+
+<div id="aiMentor" class="ai-mentor" aria-hidden="true">
+  <div class="mentor-bg"></div>
+  <div class="mentor-top"><button class="mentor-close" onclick="closeMentor()">← Back</button><div><b>YSM AI Mentor</b><small>Personal Career & Study Teacher</small></div><span class="mentor-lang" id="aiLangLabel">Hindi</span></div>
+  <div class="mentor-stage">
+    <div class="avatar-video" aria-label="Talking AI teacher">
+      <div class="avatar-glow"></div><div class="avatar-head large"><div class="hair"></div><div class="brow b1"></div><div class="brow b2"></div><div class="eye e1"></div><div class="eye e2"></div><div class="nose"></div><div class="mouth"></div></div>
+      <div class="avatar-body"><div class="shirt"></div></div>
+      <div class="speaking-ring"></div>
+    </div>
+    <div class="mentor-info"><div class="status-dot"></div><span id="aiStatus">Ready</span></div>
+    <div id="aiChat" class="ai-chat"><div class="ai-msg assistant">Click Start Mentor or ask me a question about your studies, skills or career.</div></div>
+  </div>
+  <div class="mentor-controls"><select id="mentorLanguage" onchange="document.getElementById('aiLanguage').value=this.value;updateLanguage()"><option value="hi">Hindi</option><option value="en">English</option><option value="bn">Bengali</option><option value="mr">Marathi</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="gu">Gujarati</option></select><button class="mic-btn" onclick="toggleMic()">🎙️</button><input id="aiInput" placeholder="Ask your AI teacher…" autocomplete="off"><button id="aiSend" class="send-btn" onclick="sendAIQuestion()">Send</button><button class="end-btn" onclick="stopAICoach()">End</button></div>
+</div>
+
+<div class="result-panel question-review"><h3>📝 Question-wise Review</h3><p class="muted">See exactly which answers were correct and where you need more practice.</p>{% for q in question_review %}<div class="review-item {% if q.is_correct %}review-correct{% else %}review-wrong{% endif %}"><div class="review-title"><b>Q{{q.number}}. {{q.text}}</b><span>{% if q.is_correct %}✅ Correct{% else %}❌ Wrong{% endif %}</span></div><small class="category">{{q.category}}</small><p><b>Your answer:</b> {{q.selected or 'Not answered'}}</p>{% if not q.is_correct %}<p><b>Correct answer:</b> {{q.correct}}</p>{% endif %}</div>{% endfor %}</div>
+
+<div class="result-panel"><h3>📊 Category Performance</h3>
+{% set max_score = categories.values()|max if categories else 1 %}
+{% for c,s in categories.items() %}
+<div class="category-chart-row"><div class="category-chart-label"><span>{{c}}</span><b>{{s}}</b></div><div class="bar-track"><div class="bar-fill" style="width: {{ ((s / max_score) * 100) if max_score else 0 }}%"></div></div></div>
+{% endfor %}
+<div class="visual-ai-note"><span class="badge">🤖 AI Chart Explanation</span><p>{{ chart_text }}</p></div>
+</div><p class="note">The visual explanations are generated from your assessment result, so you can read the map, chart and roadmap in simple language.</p><a class="btn primary" href="/assessment">Retake Assessment</a><a class="btn light" href="/dashboard">Dashboard</a></div></main><footer>© 2026 Yuva Skill Map</footer>
+<script>
+const AI_RESULT = {
+  name: {{ result["name"]|tojson }},
+  level: {{ result["level"]|tojson }},
+  percentage: {{ result["percentage"]|tojson }},
+  recommendation: {{ result["recommendation"]|tojson }},
+  roadmap: {{ result["roadmap"]|tojson }}
+};
+</script>
+<script src="/static/voice_ai.js"></script><script>window.addEventListener('DOMContentLoaded',()=>{const a=document.getElementById('mentorLanguage');if(a){a.value=localStorage.getItem('ysm_ai_language')||'hi';} });</script>
+</body></html>

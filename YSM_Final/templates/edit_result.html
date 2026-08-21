@@ -1,0 +1,15 @@
+<!doctype html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edit Result</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<header class="navbar"><a class="brand" href="/admin/dashboard">YSM Owner</a>
+<nav><a href="/admin/dashboard">Admin Dashboard</a><a href="/admin/logout">Logout</a></nav></header>
+<main class="form-page"><div class="form-card wide"><span class="badge">Owner Only</span><h1>Edit Result</h1>
+<p>Student: <b>{{result["name"]}}</b></p>
+<form method="POST">
+<label>Score (0–15)</label><input type="number" name="score" min="0" max="15" value="{{result['score']}}" required>
+<label>Career Recommendation</label><textarea name="recommendation" rows="4" required>{{result["recommendation"]}}</textarea>
+<label>Learning Roadmap</label><textarea name="roadmap" rows="4" required>{{result["roadmap"]}}</textarea>
+<button class="btn primary full">Save Result</button>
+<a class="btn light full center" href="/admin/dashboard">Cancel</a>
+</form></div></main><footer>© 2026 Yuva Skill Map</footer></body></html>

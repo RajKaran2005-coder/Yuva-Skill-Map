@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Yuva Skill Map | Career & Skill Development</title><link rel="stylesheet" href="/static/style.css"></head><body><header class="navbar"><a class="brand" href="/"><span class="ysm-logo">YSM</span> Yuva Skill Map</a><nav><a href="/">Home</a><a href="/login">Login</a><a class="nav-btn" href="/register">Register</a></nav></header><section class="hero"><div><span class="badge">Bachelor's Student Skill & Career Platform</span><h1>Discover Your Skills.<br>Choose Your Career.</h1><p>Degree → Course → Subjects → Skill Assessment → Career Direction → Learning Roadmap.</p><a class="btn primary" href="/register">Start Your Skill Map</a><a class="btn light" href="/login">Student Login</a>
+<button class="btn voice-welcome" type="button" onclick="playWelcome()">🔊 AI Welcome</button>
+<div id="welcomeStatus" class="welcome-status">Tap to hear the welcome</div></div></section><section class="section"><h2>All-in-one Student Platform</h2><div class="grid three">{% for x in [("🎓","Degree & Course","B.Tech, BCA, B.A., B.Com, BBA, B.Sc., B.Voc and more."),("📚","Subjects","Select subjects according to your degree/course."),("📝","Assessment","Test your current skill foundation."),("🎯","Career Direction","Get a suitable direction from your assessment."),("🗺️","Learning Roadmap","See what to learn next, step by step."),("👨‍💼","Owner Dashboard","Manage students and results.")] %}<div class="card"><div class="emoji">{{x[0]}}</div><h3>{{x[1]}}</h3><p>{{x[2]}}</p></div>{% endfor %}</div></section><footer>© 2026 Yuva Skill Map</footer>
+<script>
+function pickWelcomeVoice(){
+ const voices=speechSynthesis.getVoices();
+ const indian=voices.filter(v=>/hi-IN|en-IN/i.test(v.lang));
+ return indian.find(v=>/female|zira|veena|heera|samantha/i.test(v.name))||indian[0]||voices[0];
+}
+function playWelcome(){
+ if(!("speechSynthesis" in window)){return;}
+ speechSynthesis.cancel();
+ const text="Namaste! Aapka swagat hai. Welcome to My Universe, Yuva Skill Map. This platform is created by Raj Karan. Main aapka AI learning guide hoon. Yahan aap apni skills discover karke career ki right direction choose kar sakte hain. Let us begin your career journey.";
+ const u=new SpeechSynthesisUtterance(text); u.rate=.88; u.pitch=1.06; u.volume=1;
+ const v=pickWelcomeVoice(); if(v){u.voice=v;u.lang=v.lang;}else{u.lang="en-IN";}
+ const s=document.getElementById("welcomeStatus"); if(s)s.textContent="🎙️ AI Welcome playing...";
+ u.onend=()=>{if(s)s.textContent="Welcome to Yuva Skill Map ❤️";};
+ speechSynthesis.speak(u);
+}
+</script></body></html>
